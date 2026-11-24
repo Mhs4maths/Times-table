@@ -1,0 +1,1036 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0c1222">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="جدول الضرب">
+<meta name="description" content="لعبة جدول الضرب الإلكترونية - مدرسة معاذ بن جبل المتوسطة بنين">
+<title>جدول الضرب الإلكتروني</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Lalezar&display=swap">
+<style>
+:root{
+  --bg:#0c1222;
+  --panel:#151e33;
+  --panel-2:#1c2740;
+  --line:#2d3a5c;
+  --ink:#f0f4ff;
+  --muted:#94a3b8;
+  --accent:#14b8a6;
+  --accent-dim:rgba(20,184,166,.14);
+  --gold:#f59e0b;
+  --gold-dim:rgba(245,158,11,.14);
+  --good:#10b981;
+  --bad:#f43f5e;
+  --font-display:'Lalezar','Cairo','Segoe UI',Tahoma,sans-serif;
+  --font-body:'Cairo','Segoe UI',Tahoma,Arial,sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:var(--bg);
+  background-image:
+    radial-gradient(900px 500px at 90% -15%,rgba(20,184,166,.18),transparent 55%),
+    radial-gradient(700px 480px at -5% 110%,rgba(245,158,11,.10),transparent 55%);
+  color:var(--ink); font-family:var(--font-body); font-size:16px; line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:16px 28px; direction:rtl; margin:0;
+}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.school{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+.school .crest{
+  flex:none;width:46px;height:46px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),#0d9488);
+  display:grid;place-items:center;font-family:var(--font-display);font-size:28px;color:#042f2e;
+}
+.school .txt{min-width:0;line-height:1.35}
+.school b{display:block;font-size:15px}
+.school span{display:block;color:var(--muted);font-size:12.5px}
+.sound{margin-inline-start:auto;flex:none}
+button{font-family:inherit;font-size:inherit;cursor:pointer;border:0;color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.icon-btn{width:42px;height:42px;border-radius:12px;background:var(--panel-2);border:1px solid var(--line);font-size:19px;line-height:1}
+.screen{display:none;flex-direction:column;gap:14px}
+.screen.on{display:flex}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:20px}
+h1{font-family:var(--font-display);font-weight:400;font-size:clamp(32px,8.5vw,50px);line-height:1.15;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);margin:6px 0 0;font-size:15px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.lbl{font-weight:700;font-size:14px;color:var(--muted)}
+input[type=text],input[type=tel],select{
+  width:100%;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;
+  padding:12px 14px;color:var(--ink);font-family:inherit;font-size:16px;
+}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{
+  flex:1 1 90px;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;
+  padding:10px 12px;font-weight:700;text-align:center;color:var(--ink);
+  transition:border-color .15s,background .15s;
+}
+.chip small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
+.chip[aria-pressed=true]{border-color:var(--accent);background:var(--accent-dim);box-shadow:0 0 0 1px var(--accent) inset}
+.stack{display:flex;flex-direction:column;gap:16px}
+.btn{
+  background:linear-gradient(180deg,#2dd4bf,#0d9488);color:#042f2e;font-weight:900;
+  border-radius:14px;padding:14px 20px;font-size:18px;box-shadow:0 5px 0 #0f766e;
+  transition:transform .08s,box-shadow .08s;
+}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #0f766e}
+.btn.gold{background:linear-gradient(180deg,#fbbf24,#d97706);box-shadow:0 5px 0 #b45309;color:#1c1002}
+.btn.gold:active{box-shadow:0 1px 0 #b45309}
+.btn.ghost{
+  background:var(--panel-2);color:var(--ink);box-shadow:0 4px 0 #0f172a;
+  border:1px solid var(--line);font-weight:700;font-size:16px;
+}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btns{display:flex;flex-wrap:wrap;gap:10px}
+.btns>*{flex:1 1 140px}
+.hint{color:var(--muted);font-size:13.5px;margin:0}
+.err{color:var(--bad);font-weight:700;min-height:1.4em;margin:0}
+.mode-row{display:flex;gap:10px;flex-wrap:wrap}
+.mode-chip{
+  flex:1 1 140px;background:var(--bg);border:1.5px solid var(--line);border-radius:12px;
+  padding:12px;font-weight:700;text-align:center;
+}
+.mode-chip[aria-pressed=true]{border-color:var(--gold);background:var(--gold-dim)}
+.mode-chip small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:3px}
+
+/* play */
+.hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+.hud .box{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:6px 12px;font-weight:700;display:flex;flex-direction:column;line-height:1.25}
+.hud .box small{color:var(--muted);font-weight:600;font-size:11.5px}
+.hud .box.end{align-items:flex-end}
+.pill{background:var(--panel-2);border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-weight:900;font-variant-numeric:tabular-nums}
+.timer{display:flex;align-items:center;gap:12px}
+.timer .bar{flex:1;height:16px;border-radius:99px;background:var(--bg);border:1px solid var(--line);overflow:hidden}
+.timer .fill{height:100%;width:100%;background:linear-gradient(90deg,var(--good),var(--accent));border-radius:99px;transform-origin:right center;transition:background .3s}
+.timer.warn .fill{background:linear-gradient(90deg,var(--gold),#ea580c)}
+.timer.low .fill{background:linear-gradient(90deg,var(--bad),#e11d48)}
+.timer .sec{font-family:var(--font-display);font-size:34px;line-height:1;min-width:2.2ch;text-align:center;font-variant-numeric:tabular-nums}
+.timer.low .sec{color:var(--bad);animation:pulse .5s infinite alternate}
+@keyframes pulse{to{transform:scale(1.15)}}
+.qcard{text-align:center;padding:28px 16px;position:relative;overflow:hidden}
+.qcard .q{font-family:var(--font-display);font-size:clamp(58px,17vw,104px);line-height:1.1;direction:ltr;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+.qcard .q .x{color:var(--gold);padding:0 .12em}
+.qcard .q .m{color:var(--accent)}
+.qcard .tag{color:var(--muted);font-weight:700;margin-bottom:6px}
+.qcard.shake{animation:shake .4s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.qcard.pop{animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.04)}}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.opt{
+  background:var(--panel-2);border:2px solid var(--line);border-radius:16px;min-height:76px;
+  font-family:var(--font-display);font-size:clamp(30px,8vw,42px);position:relative;
+  direction:ltr;font-variant-numeric:tabular-nums;transition:transform .08s,border-color .15s,background .15s;
+}
+.opt:hover:not(:disabled){border-color:var(--accent)}
+.opt:active:not(:disabled){transform:scale(.97)}
+.opt .k{position:absolute;top:6px;inset-inline-start:10px;font-family:var(--font-body);font-size:12px;color:var(--muted);font-weight:700}
+.opt.right{background:rgba(16,185,129,.22);border-color:var(--good)}
+.opt.wrong{background:rgba(244,63,94,.22);border-color:var(--bad)}
+.opt:disabled{cursor:default;color:var(--ink)}
+.feedback{min-height:52px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:18px;border-radius:14px;padding:8px 12px}
+.feedback.ok{color:var(--good)}
+.feedback.no{color:var(--bad)}
+.feedback.to{color:var(--gold)}
+.progress{height:8px;background:var(--bg);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.progress i{display:block;height:100%;background:var(--gold);width:0;transition:width .3s;border-radius:99px;margin-inline-start:auto}
+.pts-pop{font-size:15px;color:var(--gold);font-weight:800}
+
+/* countdown */
+.count{display:grid;place-items:center;min-height:300px;text-align:center}
+.count .n{font-family:var(--font-display);font-size:150px;line-height:1;color:var(--gold);animation:pop .6s}
+.count p{margin:0;color:var(--muted);font-weight:700}
+
+/* result */
+.stars{font-size:44px;letter-spacing:6px;text-align:center;direction:ltr}
+.stars .off{opacity:.22;filter:grayscale(1)}
+.score-big{font-family:var(--font-display);font-size:clamp(56px,16vw,90px);line-height:1;text-align:center;color:var(--accent)}
+.score-big small{font-size:.38em;color:var(--muted)}
+.points-line{text-align:center;font-size:18px;font-weight:800;color:var(--gold);margin-top:4px}
+.verdict{text-align:center;font-weight:900;font-size:21px;margin:8px 0 0}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.stat{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.stat b{display:block;font-size:20px;font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+.mist{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.mist li{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+.mist .eq{font-family:var(--font-display);font-size:24px;direction:ltr;font-variant-numeric:tabular-nums}
+.mist .b{color:var(--bad);font-weight:700;font-size:14px}
+.sheetst{border-radius:12px;padding:12px 14px;font-weight:700;line-height:1.6;border:1px solid var(--line);background:var(--bg)}
+.sheetst.ok{border-color:var(--good);color:var(--good)}
+.sheetst.wait{color:var(--muted)}
+.sheetst.fail{border-color:var(--gold);color:var(--gold);background:var(--gold-dim)}
+.sent{color:var(--good);font-weight:700;min-height:1.4em;margin:0}
+.best-box{background:var(--accent-dim);border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:center;font-size:14px;color:var(--muted)}
+.best-box strong{color:var(--accent)}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:50}
+
+/* Reference table modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(6,10,20,.78);backdrop-filter:blur(6px);
+  z-index:100;display:none;align-items:center;justify-content:center;padding:16px;
+}
+.modal-overlay.on{display:flex}
+.modal{
+  background:var(--panel);border:1px solid var(--line);border-radius:20px;
+  width:100%;max-width:520px;max-height:90vh;overflow:auto;
+  padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);
+}
+.modal header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal h2{margin:0;font-size:20px;font-weight:900}
+.modal .close-btn{
+  width:40px;height:40px;border-radius:12px;background:var(--panel-2);
+  border:1px solid var(--line);font-size:20px;display:grid;place-items:center;
+}
+.ref-table{
+  width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;
+  font-size:13px;text-align:center;
+}
+.ref-table th,.ref-table td{
+  border:1px solid var(--line);padding:6px 4px;min-width:28px;
+}
+.ref-table th{
+  background:var(--panel-2);color:var(--accent);font-weight:800;
+}
+.ref-table td{background:var(--bg)}
+.ref-table tr:hover td{background:var(--accent-dim)}
+.ref-table .diag{background:rgba(245,158,11,.12);color:var(--gold);font-weight:700}
+.ref-note{font-size:12.5px;color:var(--muted);margin:12px 0 0;text-align:center}
+
+/* install banner */
+.install-banner{
+  display:none;background:linear-gradient(135deg,var(--accent-dim),var(--gold-dim));
+  border:1px solid var(--line);border-radius:14px;padding:12px 14px;
+  align-items:center;gap:12px;margin-bottom:4px;
+}
+.install-banner.show{display:flex}
+.install-banner p{margin:0;font-size:14px;font-weight:700;flex:1}
+.install-banner button{flex:none;padding:8px 14px;font-size:14px;border-radius:10px}
+
+@media (max-width:420px){
+  .row2{grid-template-columns:1fr}
+  .hud .box small{font-size:10.5px}
+  .opt{min-height:70px}
+  .ref-table{font-size:11.5px}
+  .ref-table th,.ref-table td{padding:5px 2px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <!-- Install PWA banner -->
+  <div class="install-banner" id="installBanner">
+    <p>ثبّت اللعبة على جهازك للعب بدون إنترنت</p>
+    <button class="btn" id="installBtn" type="button" style="padding:8px 16px;font-size:14px;box-shadow:0 3px 0 #0f766e">تثبيت</button>
+    <button class="icon-btn" id="dismissInstall" type="button" aria-label="إغلاق" style="width:36px;height:36px">✕</button>
+  </div>
+
+  <header class="school">
+    <div class="crest" aria-hidden="true">×</div>
+    <div class="txt">
+      <b>مدرسة معاذ بن جبل المتوسطة بنين</b>
+      <span>قسم الرياضيات · منطقة الفروانية التعليمية</span>
+    </div>
+    <button class="icon-btn sound" id="soundBtn" type="button" aria-label="تشغيل أو إيقاف الصوت" title="الصوت">🔊</button>
+  </header>
+
+  <!-- START -->
+  <section class="screen on" id="sStart">
+    <div class="card stack">
+      <div>
+        <h1>جدول الضرب <em>الإلكتروني</em></h1>
+        <p class="sub">اختبر سرعتك ودقتك. كل إجابة صحيحة تعطيك نقاطًا، والإجابة الأسرع تعطي نقاطًا أكثر.</p>
+      </div>
+
+      <div class="row2">
+        <div class="field">
+          <label for="stuName">اسم الطالب</label>
+          <input type="text" id="stuName" autocomplete="off" placeholder="الاسم الثلاثي">
+        </div>
+        <div class="field">
+          <label for="stuClass">الصف والشعبة</label>
+          <input type="text" id="stuClass" autocomplete="off" placeholder="مثال: 6/3">
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">المستوى</span>
+        <div class="chips" id="levelChips">
+          <button type="button" class="chip" data-v="easy" aria-pressed="false">سهل<small>من 2 إلى 9 · 8 ث</small></button>
+          <button type="button" class="chip" data-v="mid" aria-pressed="true">متوسط<small>من 2 إلى 12 · 10 ث</small></button>
+          <button type="button" class="chip" data-v="hard" aria-pressed="false">تحدٍّ<small>حتى 19 × 12 · 12 ث</small></button>
+        </div>
+      </div>
+
+      <div class="field">
+        <span class="lbl">نوع اللعب</span>
+        <div class="mode-row" id="modeRow">
+          <button type="button" class="mode-chip" data-mode="challenge" aria-pressed="true">
+            تحدٍّ بالنقاط
+            <small>30 سؤال · وقت محدد · إرسال للمعلم</small>
+          </button>
+          <button type="button" class="mode-chip" data-mode="practice" aria-pressed="false">
+            وضع التدريب
+            <small>بدون ضغط الوقت · مراجعة حرة</small>
+          </button>
+        </div>
+      </div>
+
+      <p class="hint" id="modeHint">⏱ 30 سؤالًا · الوقت يختلف حسب المستوى · النقاط الإضافية للسرعة</p>
+      <div class="best-box" id="bestBox" hidden>أفضل نتيجتك السابقة: <strong id="bestTxt">—</strong></div>
+      <p class="err" id="startErr" role="alert"></p>
+
+      <div class="btns">
+        <button class="btn" id="goBtn" type="button">ابدأ اللعب ▶</button>
+        <button class="btn ghost" id="refBtn" type="button">جدول مرجعي 📋</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- COUNTDOWN -->
+  <section class="screen" id="sCount">
+    <div class="card count">
+      <div>
+        <p>استعد…</p>
+        <div class="n" id="cN">3</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLAY -->
+  <section class="screen" id="sPlay">
+    <div class="hud">
+      <div class="box"><small>السؤال</small><span id="hQ">1 / 30</span></div>
+      <div class="pill" id="hStreak" aria-live="polite">⚡ 0</div>
+      <div class="box end"><small>النقاط</small><span id="hScore">0</span></div>
+    </div>
+    <div class="progress" aria-hidden="true"><i id="prog"></i></div>
+    <div class="timer" id="timer" role="timer" aria-label="الوقت المتبقي">
+      <div class="bar"><div class="fill" id="tFill"></div></div>
+      <div class="sec" id="tSec">10</div>
+    </div>
+    <div class="card qcard" id="qcard">
+      <div class="tag">كم يساوي؟</div>
+      <div class="q" id="qText"><span class="m">7</span><span class="x">×</span><span class="m">8</span></div>
+    </div>
+    <div class="opts" id="opts"></div>
+    <div class="feedback" id="fb" aria-live="assertive"></div>
+    <div class="btns">
+      <button class="btn gold" id="nextBtn" type="button" disabled>التالي ◀</button>
+      <button class="btn ghost" id="skipBtn" type="button">تخطي ⏭</button>
+      <button class="btn ghost" id="quitBtn" type="button">إنهاء ⏹</button>
+    </div>
+    <!-- زر الجدول المرجعي يظهر فقط في وضع التدريب -->
+    <button class="btn ghost" id="refBtnPlay" type="button" hidden style="width:100%">عرض الجدول المرجعي 📋</button>
+  </section>
+
+  <!-- RESULT -->
+  <section class="screen" id="sEnd">
+    <div class="card">
+      <div class="stars" id="stars"></div>
+      <div class="score-big" id="rScore">0<small> / 30</small></div>
+      <div class="points-line" id="rPoints">0 نقطة</div>
+      <p class="verdict" id="verdict"></p>
+      <div class="stats">
+        <div class="stat"><b id="rPct">0%</b><span>الدقة</span></div>
+        <div class="stat"><b id="rTime">0:00</b><span>الزمن الكلي</span></div>
+        <div class="stat"><b id="rStreak">0</b><span>أطول سلسلة</span></div>
+      </div>
+      <div class="best-box" id="newBest" hidden style="margin-top:14px">🎉 رقم قياسي جديد لك في هذا المستوى!</div>
+    </div>
+
+    <div class="card stack" id="mistCard">
+      <div class="lbl" id="mistTitle">مراجعة الأخطاء</div>
+      <ul class="mist" id="mist"></ul>
+      <button class="btn ghost" id="practiceMistBtn" type="button" hidden>تدرب على الأخطاء فقط 🔁</button>
+    </div>
+
+    <div class="card stack">
+      <div class="lbl">إرسال النتيجة إلى المعلم</div>
+      <div class="sheetst" id="sheetSt" role="status"></div>
+      <button class="btn ghost" id="retryBtn" type="button" hidden>إعادة محاولة الإرسال 🔄</button>
+      <div class="btns">
+        <button class="btn ghost" id="copyBtn" type="button">نسخ النتيجة 📋</button>
+      </div>
+      <p class="sent" id="sent" role="status"></p>
+      <div class="btns">
+        <button class="btn gold" id="againBtn" type="button">إعادة اللعب 🔁</button>
+        <button class="btn ghost" id="homeBtn" type="button">الصفحة الرئيسية 🏠</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- Reference Table Modal -->
+<div class="modal-overlay" id="refModal" role="dialog" aria-modal="true" aria-labelledby="refTitle">
+  <div class="modal">
+    <header>
+      <h2 id="refTitle">جدول الضرب المرجعي (1–12)</h2>
+      <button class="close-btn" id="closeRef" type="button" aria-label="إغلاق">✕</button>
+    </header>
+    <div style="overflow-x:auto">
+      <table class="ref-table" id="refTable"></table>
+    </div>
+    <p class="ref-note">اضغط على أي خلية لتمييزها · مفيد في وضع التدريب</p>
+  </div>
+</div>
+
+<canvas class="confetti" id="conf" aria-hidden="true"></canvas>
+
+<script>
+(function(){
+  const $=id=>document.getElementById(id);
+  const SCHOOL='مدرسة معاذ بن جبل المتوسطة بنين';
+
+  /* ضع رابط Apps Script هنا */
+  const SHEET_URL='https://script.google.com/macros/s/AKfycbzJjWgMuUA9oTXxDHPeaCP-y93Ipt_2mrXlVdCy4qHh30AzxInbpBXWrTsLwpyEMQY7/exec';
+
+  const LEVELS={
+    easy:{n:'سهل', a:[2,9],  b:[2,9],  t:8},
+    mid: {n:'متوسط',a:[2,12], b:[2,12], t:10},
+    hard:{n:'تحدٍّ',a:[6,19], b:[3,12], t:12}
+  };
+
+  let level='mid', mode='challenge', muted=false;
+  let cfg=null, qs=[], idx=0, score=0, streak=0, bestStreak=0, rec=[];
+  let locked=true, tLeft=0, tTotal=10, tStart=0, tick=null, gameStart=0, gameMs=0, lastBeep=-1, advTimer=null;
+  let practiceMistakesOnly=false;
+  let deferredPrompt=null;
+
+  /* ---------- storage ---------- */
+  function sget(k){try{return localStorage.getItem(k)||''}catch(e){return ''}}
+  function sset(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+  function getBest(lv){return +(sget('mt_best_'+lv)||0)}
+  function setBest(lv,val){const prev=getBest(lv);if(val>prev){sset('mt_best_'+lv,val);return true}return false}
+
+  $('stuName').value=sget('mt_name');
+  $('stuClass').value=sget('mt_class');
+  muted=sget('mt_mute')==='1';
+  $('soundBtn').textContent=muted?'🔇':'🔊';
+
+  function updateBestBox(){
+    const b=getBest(level);
+    if(b>0){
+      $('bestBox').hidden=false;
+      $('bestTxt').textContent=b+' نقطة ('+LEVELS[level].n+')';
+    }else{
+      $('bestBox').hidden=true;
+    }
+  }
+  updateBestBox();
+
+  /* ---------- PWA install ---------- */
+  window.addEventListener('beforeinstallprompt',(e)=>{
+    e.preventDefault();
+    deferredPrompt=e;
+    if(!sget('mt_install_dismissed')){
+      $('installBanner').classList.add('show');
+    }
+  });
+  $('installBtn').onclick=async()=>{
+    if(!deferredPrompt)return;
+    deferredPrompt.prompt();
+    const {outcome}=await deferredPrompt.userChoice;
+    deferredPrompt=null;
+    $('installBanner').classList.remove('show');
+  };
+  $('dismissInstall').onclick=()=>{
+    $('installBanner').classList.remove('show');
+    sset('mt_install_dismissed','1');
+  };
+
+  // Register service worker
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('./sw.js').catch(()=>{});
+  }
+
+  /* ---------- sound ---------- */
+  let ac=null,master=null;
+  function ctx(){
+    if(!ac){try{
+      ac=new (window.AudioContext||window.webkitAudioContext)();
+      master=ac.createGain();master.gain.value=.9;
+      const dl=ac.createDelay();dl.delayTime.value=.14;
+      const fb=ac.createGain();fb.gain.value=.22;
+      const wet=ac.createGain();wet.gain.value=.28;
+      master.connect(ac.destination);master.connect(dl);dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(ac.destination);
+    }catch(e){}}
+    if(ac&&ac.state==='suspended')ac.resume();
+    return ac;
+  }
+  function note(f,d,vol,when,type,slide){
+    if(muted)return;const c=ctx();if(!c)return;
+    const t=c.currentTime+(when||0);
+    [[1,1],[2,.18]].forEach(([m,a])=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.type=type||'sine';o.frequency.setValueAtTime(f*m,t);
+      if(slide)o.frequency.exponentialRampToValueAtTime(slide*m,t+d);
+      g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime((vol||.2)*a,t+.015);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
+      o.connect(g);g.connect(master);o.start(t);o.stop(t+d+.05);
+    });
+  }
+  const N={C5:523.25,D5:587.33,E5:659.25,G5:783.99,A5:880,C6:1046.5,E6:1318.5,G6:1568,A4:440,G4:392,E4:329.63,C4:261.63};
+  const SND={
+    click(){note(700,.09,.1,0,'sine',520)},
+    right(){note(N.C5,.35,.26,0);note(N.E5,.35,.24,.09);note(N.G5,.45,.24,.18);note(N.C6,.6,.22,.27)},
+    wrong(){note(300,.35,.28,0,'triangle',210);note(220,.45,.24,.16,'triangle',150)},
+    tick(){note(1000,.05,.08)},
+    urgent(){note(1250,.07,.12,0,'triangle')},
+    timeup(){note(N.G4,.3,.26,0,'triangle');note(N.E4,.3,.26,.2,'triangle');note(N.C4,.6,.28,.4,'triangle')},
+    beep(hi){hi?(note(N.C6,.5,.26),note(N.G6,.6,.2,.08)):note(N.A5,.18,.2)},
+    win(){[N.C5,N.E5,N.G5,N.C6,N.G5,N.C6,N.E6].forEach((f,i)=>note(f,.5,.24,i*.13));note(N.G6,.9,.2,.95)},
+    lose(){[N.G4,N.E4,N.C4].forEach((f,i)=>note(f,.5,.22,i*.22,'triangle'))}
+  };
+  $('soundBtn').onclick=()=>{muted=!muted;sset('mt_mute',muted?'1':'0');$('soundBtn').textContent=muted?'🔇':'🔊';if(!muted)SND.click()};
+
+  /* ---------- screens ---------- */
+  function show(id){
+    ['sStart','sCount','sPlay','sEnd'].forEach(s=>$(s).classList.toggle('on',s===id));
+    window.scrollTo(0,0);
+  }
+
+  /* ---------- level & mode ---------- */
+  document.querySelectorAll('#levelChips .chip').forEach(b=>{
+    b.onclick=()=>{
+      level=b.dataset.v;
+      document.querySelectorAll('#levelChips .chip').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+      updateBestBox();
+      SND.click();
+    };
+  });
+
+  document.querySelectorAll('#modeRow .mode-chip').forEach(b=>{
+    b.onclick=()=>{
+      mode=b.dataset.mode;
+      document.querySelectorAll('#modeRow .mode-chip').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));
+      if(mode==='practice'){
+        $('modeHint').textContent='وضع التدريب: وقت أطول · لا يُرسل للمعلم · يمكن فتح الجدول المرجعي';
+      }else{
+        $('modeHint').textContent='⏱ 30 سؤالًا · الوقت يختلف حسب المستوى · النقاط الإضافية للسرعة';
+      }
+      SND.click();
+    };
+  });
+
+  /* ---------- Reference Table ---------- */
+  function buildRefTable(){
+    const table=$('refTable');
+    let html='<thead><tr><th>×</th>';
+    for(let i=1;i<=12;i++) html+='<th>'+i+'</th>';
+    html+='</tr></thead><tbody>';
+    for(let r=1;r<=12;r++){
+      html+='<tr><th>'+r+'</th>';
+      for(let c=1;c<=12;c++){
+        const val=r*c;
+        const cls = (r===c) ? ' class="diag"' : '';
+        html+='<td'+cls+' data-r="'+r+'" data-c="'+c+'">'+val+'</td>';
+      }
+      html+='</tr>';
+    }
+    html+='</tbody>';
+    table.innerHTML=html;
+
+    // click to highlight
+    table.querySelectorAll('td').forEach(td=>{
+      td.style.cursor='pointer';
+      td.onclick=()=>{
+        table.querySelectorAll('td').forEach(x=>x.style.outline='');
+        td.style.outline='2px solid var(--gold)';
+      };
+    });
+  }
+  buildRefTable();
+
+  function openRef(){
+    $('refModal').classList.add('on');
+    SND.click();
+  }
+  function closeRef(){
+    $('refModal').classList.remove('on');
+  }
+  $('refBtn').onclick=openRef;
+  $('refBtnPlay').onclick=openRef;
+  $('closeRef').onclick=closeRef;
+  $('refModal').onclick=(e)=>{if(e.target===$('refModal'))closeRef()};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')closeRef()});
+
+  /* ---------- smarter question generation ---------- */
+  const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+  function shuffle(a){for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a}
+
+  function makeDistractors(a,b,ans){
+    const set=new Set([ans]);
+    const candidates=[
+      a*(b+1), a*(b-1), (a+1)*b, (a-1)*b,
+      ans+a, ans-a, ans+b, ans-b,
+      a+b, Math.abs(a-b),
+      ans+10, ans-10, ans+2, ans-2,
+      (a+1)*(b+1), (a-1)*(b-1),
+      a*b + a + b,
+    ];
+    shuffle(candidates);
+    for(const c of candidates){
+      if(set.size>=4)break;
+      if(c>0 && c!==ans && !set.has(c) && c<400) set.add(c);
+    }
+    let k=1;
+    while(set.size<4){
+      const extra=ans + k*(k%2===0?3:-3);
+      if(extra>0 && !set.has(extra)) set.add(extra);
+      k++;
+    }
+    return shuffle([...set]);
+  }
+
+  function makeQs(n,lv){
+    const L=LEVELS[lv], seen=new Set(), out=[];
+    let guard=0;
+    while(out.length<n && guard++<3000){
+      let a=rnd(L.a[0],L.a[1]), b=rnd(L.b[0],L.b[1]);
+      if(Math.random()<.5 && lv!=='hard'){const t=a;a=b;b=t}
+      const key=Math.min(a,b)+'x'+Math.max(a,b)+(lv==='hard'?'.'+a+'.'+b:'');
+      if(seen.has(key) && seen.size < 40) continue;
+      seen.add(key);
+      const ans=a*b;
+      out.push({a,b,ans,opts:makeDistractors(a,b,ans)});
+    }
+    return out;
+  }
+
+  /* ---------- start ---------- */
+  $('goBtn').onclick=()=>{
+    const name=$('stuName').value.trim();
+    if(name.length<2){
+      $('startErr').textContent='اكتب اسمك أولًا لنبدأ.';
+      $('stuName').focus();
+      return;
+    }
+    $('startErr').textContent='';
+    sset('mt_name',name);
+    sset('mt_class',$('stuClass').value.trim());
+    practiceMistakesOnly=false;
+    cfg={
+      name,
+      cls:$('stuClass').value.trim(),
+      level,
+      mode,
+      n:30,
+      t: mode==='practice' ? LEVELS[level].t + 6 : LEVELS[level].t
+    };
+    ctx();
+    SND.click();
+    countdown();
+  };
+
+  function countdown(){
+    show('sCount');
+    let n=3;
+    $('cN').textContent=n;
+    SND.beep(false);
+    const iv=setInterval(()=>{
+      n--;
+      if(n>0){
+        const el=$('cN');
+        el.textContent=n;
+        el.style.animation='none';
+        void el.offsetWidth;
+        el.style.animation='';
+        SND.beep(false);
+      }else{
+        clearInterval(iv);
+        SND.beep(true);
+        begin();
+      }
+    },900);
+  }
+
+  function begin(fromMistakes){
+    if(fromMistakes && rec.length){
+      const wrongs=rec.filter(r=>!r.ok);
+      qs=wrongs.map(r=>({a:r.a,b:r.b,ans:r.ans,opts:makeDistractors(r.a,r.b,r.ans)}));
+      if(qs.length===0){show('sStart');return;}
+      practiceMistakesOnly=true;
+      cfg.mode='practice';
+      cfg.n=qs.length;
+      cfg.t=14;
+    }else{
+      qs=makeQs(cfg.n,cfg.level);
+      practiceMistakesOnly=false;
+    }
+    idx=0;score=0;streak=0;bestStreak=0;rec=[];
+    tTotal=cfg.t;
+    gameStart=Date.now();
+    show('sPlay');
+    // إظهار زر الجدول فقط في التدريب
+    $('refBtnPlay').hidden = (cfg.mode!=='practice');
+    $('timer').style.opacity = (cfg.mode==='practice') ? '.55' : '1';
+    renderQ();
+  }
+
+  /* ---------- play ---------- */
+  function renderQ(){
+    clearTimeout(advTimer);
+    const q=qs[idx];
+    locked=false;
+    $('hQ').textContent=(idx+1)+' / '+qs.length;
+    $('hScore').textContent=score;
+    $('hStreak').textContent='⚡ '+streak;
+    $('prog').style.width=(idx/qs.length*100)+'%';
+    $('qText').innerHTML='<span class="m">'+q.a+'</span><span class="x">×</span><span class="m">'+q.b+'</span>';
+    const box=$('opts');
+    box.innerHTML='';
+    q.opts.forEach((v,i)=>{
+      const b=document.createElement('button');
+      b.type='button';
+      b.className='opt';
+      b.dataset.v=v;
+      b.innerHTML='<span class="k">'+(i+1)+'</span>'+v;
+      b.onclick=()=>answer(v);
+      box.appendChild(b);
+    });
+    $('fb').textContent='';
+    $('fb').className='feedback';
+    $('nextBtn').disabled=true;
+    $('skipBtn').disabled=false;
+    $('nextBtn').textContent = idx===qs.length-1 ? 'عرض النتيجة 🏁' : 'التالي الآن ◀';
+    startTimer();
+  }
+
+  function startTimer(){
+    clearInterval(tick);
+    lastBeep=-1;
+    tStart=performance.now();
+    tLeft=tTotal;
+    paintTimer();
+    tick=setInterval(()=>{
+      const el=(performance.now()-tStart)/1000;
+      tLeft=Math.max(0,tTotal-el);
+      paintTimer();
+      const s=Math.ceil(tLeft);
+      if(s!==lastBeep && s<=4 && s>0){lastBeep=s;SND.urgent()}
+      if(tLeft<=0){clearInterval(tick);timeUp()}
+    },80);
+  }
+
+  function paintTimer(){
+    $('tFill').style.transform='scaleX('+(tLeft/tTotal)+')';
+    $('tSec').textContent=Math.ceil(tLeft);
+    const t=$('timer');
+    t.classList.toggle('low',tLeft<=4);
+    t.classList.toggle('warn',tLeft>4 && tLeft<=tTotal*0.45);
+  }
+
+  function lockOpts(correct,picked){
+    document.querySelectorAll('#opts .opt').forEach(b=>{
+      b.disabled=true;
+      const v=+b.dataset.v;
+      if(v===correct) b.classList.add('right');
+      else if(picked!==null && v===picked) b.classList.add('wrong');
+    });
+  }
+
+  function answer(v){
+    if(locked)return;
+    locked=true;
+    clearInterval(tick);
+    const q=qs[idx];
+    const used=(performance.now()-tStart)/1000;
+    const ok=v===q.ans;
+    lockOpts(q.ans,v);
+    const card=$('qcard');
+    card.classList.remove('shake','pop');
+    void card.offsetWidth;
+
+    if(ok){
+      const speedRatio=Math.max(0,(tTotal-used)/tTotal);
+      const bonus=Math.round(speedRatio*6);
+      const pts=10+bonus;
+      score+=pts;
+      streak++;
+      bestStreak=Math.max(bestStreak,streak);
+      $('fb').className='feedback ok';
+      $('fb').innerHTML='أحسنت! +'+pts+' نقطة'+(bonus>=4?' ⚡':'')+(streak>=3?' <span class="pts-pop">🔥 سلسلة '+streak+'</span>':'');
+      card.classList.add('pop');
+      SND.right();
+    }else{
+      streak=0;
+      $('fb').className='feedback no';
+      $('fb').textContent='إجابة خاطئة. الصحيح: '+q.a+' × '+q.b+' = '+q.ans;
+      card.classList.add('shake');
+      SND.wrong();
+    }
+    rec.push({a:q.a,b:q.b,ans:q.ans,given:v,ok,t:used,status:ok?'ok':'wrong'});
+    afterAnswer();
+  }
+
+  function timeUp(){
+    if(locked)return;
+    locked=true;
+    const q=qs[idx];
+    lockOpts(q.ans,null);
+    streak=0;
+    $('fb').className='feedback to';
+    $('fb').textContent='انتهى الوقت! الصحيح: '+q.a+' × '+q.b+' = '+q.ans;
+    const card=$('qcard');
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+    SND.timeup();
+    rec.push({a:q.a,b:q.b,ans:q.ans,given:null,ok:false,t:tTotal,status:'timeout'});
+    afterAnswer();
+  }
+
+  function skip(){
+    if(locked)return;
+    locked=true;
+    clearInterval(tick);
+    const q=qs[idx];
+    lockOpts(q.ans,null);
+    streak=0;
+    $('fb').className='feedback to';
+    $('fb').textContent='تم التخطي. الصحيح: '+q.a+' × '+q.b+' = '+q.ans;
+    SND.click();
+    rec.push({a:q.a,b:q.b,ans:q.ans,given:null,ok:false,t:(performance.now()-tStart)/1000,status:'skip'});
+    afterAnswer();
+  }
+
+  function afterAnswer(){
+    $('hScore').textContent=score;
+    $('hStreak').textContent='⚡ '+streak;
+    $('prog').style.width=((idx+1)/qs.length*100)+'%';
+    $('nextBtn').disabled=false;
+    $('skipBtn').disabled=true;
+    const wait = rec[rec.length-1].ok ? 1100 : 2000;
+    clearTimeout(advTimer);
+    advTimer=setTimeout(()=>{if(!$('nextBtn').disabled) next(true)},wait);
+  }
+
+  function next(auto){
+    if($('nextBtn').disabled)return;
+    clearTimeout(advTimer);
+    if(auto!==true) SND.click();
+    if(idx>=qs.length-1) finish();
+    else{idx++;renderQ()}
+  }
+
+  $('nextBtn').onclick=next;
+  $('skipBtn').onclick=skip;
+
+  $('quitBtn').onclick=()=>{
+    if($('quitBtn').dataset.sure!=='1'){
+      $('quitBtn').dataset.sure='1';
+      $('quitBtn').textContent='اضغط مرة أخرى للتأكيد';
+      setTimeout(()=>{$('quitBtn').dataset.sure='';$('quitBtn').textContent='إنهاء ⏹'},2500);
+      return;
+    }
+    $('quitBtn').dataset.sure='';
+    $('quitBtn').textContent='إنهاء ⏹';
+    clearInterval(tick);
+    clearTimeout(advTimer);
+    if(!locked){
+      rec.push({a:qs[idx].a,b:qs[idx].b,ans:qs[idx].ans,given:null,ok:false,t:0,status:'skip'});
+    }
+    finish(true);
+  };
+
+  document.addEventListener('keydown',e=>{
+    if(!$('sPlay').classList.contains('on'))return;
+    if(e.key>='1'&&e.key<='4'&&!locked){
+      const b=$('opts').children[+e.key-1];
+      if(b) answer(+b.dataset.v);
+    }else if((e.key==='Enter'||e.key==='ArrowLeft')&&locked){
+      next();
+    }
+  });
+
+  /* ---------- result ---------- */
+  function fmt(ms){
+    const s=Math.round(ms/1000);
+    return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
+  }
+
+  function finish(early){
+    clearInterval(tick);
+    clearTimeout(advTimer);
+    gameMs=Date.now()-gameStart;
+    const total=qs.length;
+    const correct=rec.filter(r=>r.ok).length;
+    const pct=total?Math.round(correct/total*100):0;
+    const stars=pct>=90?3:pct>=70?2:pct>=50?1:0;
+
+    $('stars').innerHTML=[0,1,2].map(i=>'<span class="'+(i<stars?'':'off')+'">⭐</span>').join('');
+    $('rScore').innerHTML=correct+'<small> / '+total+'</small>';
+    $('rPoints').textContent=score+' نقطة';
+    $('rPct').textContent=pct+'%';
+    $('rTime').textContent=fmt(gameMs);
+    $('rStreak').textContent=bestStreak;
+
+    let verdict='';
+    if(pct>=95) verdict='أداء استثنائي! أنت بطل جداول الضرب 🏆';
+    else if(pct>=85) verdict='ممتاز جدًا، استمر على هذا المستوى 🔥';
+    else if(pct>=70) verdict='جيد جدًا، خطوة إضافية وتصل للامتياز 👏';
+    else if(pct>=50) verdict='جيد، ركز على الأخطاء وحاول مرة أخرى 💪';
+    else verdict='لا بأس، التدريب المتكرر يصنع الإتقان. أعد المحاولة!';
+    $('verdict').textContent=verdict;
+
+    const isNewBest = (cfg.mode==='challenge' && !practiceMistakesOnly) ? setBest(cfg.level,score) : false;
+    $('newBest').hidden=!isNewBest;
+
+    const wrong=rec.filter(r=>!r.ok);
+    $('mistCard').style.display=wrong.length?'':'none';
+    $('mistTitle').textContent='مراجعة الأخطاء ('+wrong.length+')';
+    $('mist').innerHTML=wrong.map(r=>{
+      const note=r.status==='timeout'?'انتهى الوقت':r.status==='skip'?'تم التخطي':'إجابتك: '+r.given;
+      return '<li><span class="eq">'+r.a+' × '+r.b+' = '+r.ans+'</span><span class="b">'+note+'</span></li>';
+    }).join('');
+
+    $('practiceMistBtn').hidden = wrong.length<2;
+    $('practiceMistBtn').onclick=()=>{
+      SND.click();
+      begin(true);
+    };
+
+    $('sent').textContent='';
+    show('sEnd');
+
+    if(cfg.mode==='challenge' && !practiceMistakesOnly){
+      sendSheet();
+    }else{
+      setSt('ok', cfg.mode==='practice' ? 'وضع التدريب — لم يتم الإرسال للمعلم.' : 'تم إنهاء الجلسة.');
+    }
+
+    if(stars>=2){SND.win();confetti()}
+    else SND.lose();
+  }
+
+  function report(){
+    const total=qs.length,correct=rec.filter(r=>r.ok).length,pct=Math.round(correct/total*100);
+    const wrong=rec.filter(r=>!r.ok).map(r=>{
+      const why=r.status==='timeout'?'انتهى الوقت':r.status==='skip'?'تخطي':'أجاب '+r.given;
+      return '• '+r.a+' × '+r.b+' = '+r.ans+' ('+why+')';
+    });
+    return [
+      '📘 نتيجة لعبة جدول الضرب الإلكتروني',
+      SCHOOL,
+      'قسم الرياضيات – منطقة الفروانية التعليمية','',
+      'الطالب: '+cfg.name,
+      'الصف/الشعبة: '+(cfg.cls||'—'),
+      'المستوى: '+LEVELS[cfg.level].n+' | نوع اللعب: '+(cfg.mode==='practice'?'تدريب':'تحدٍّ'),
+      'وقت السؤال: '+cfg.t+' ث',
+      'الدرجة: '+correct+' من '+total+' ('+pct+'%)',
+      'النقاط: '+score,
+      'الزمن الكلي: '+fmt(gameMs),
+      'أطول سلسلة صحيحة: '+bestStreak,'',
+      wrong.length?'الأخطاء:':'لا توجد أخطاء ✅',
+      ...wrong
+    ].join('\n');
+  }
+
+  function setSt(cls,txt){
+    const e=$('sheetSt');
+    e.className='sheetst '+cls;
+    e.textContent=txt;
+  }
+
+  const FAILMSG='⚠️ لم يتم إرسال نتيجتك إلى المعلم. التقط صورة للشاشة وأرسلها لمعلم الصف على Teams.';
+
+  async function sendSheet(){
+    $('retryBtn').hidden=true;
+    const url=SHEET_URL.trim();
+    if(!/^https:\/\/script\.google\.com\//.test(url)){
+      setSt('fail',FAILMSG);
+      return;
+    }
+    setSt('wait','جارٍ إرسال النتيجة إلى المعلم…');
+    const total=qs.length,correct=rec.filter(r=>r.ok).length;
+    const payload={
+      name:cfg.name, cls:cfg.cls,
+      level:LEVELS[cfg.level].n,
+      secPerQ:cfg.t,
+      correct,total,
+      pct:Math.round(correct/total*100),
+      score, time:fmt(gameMs), bestStreak,
+      mistakes:rec.filter(r=>!r.ok).map(r=>r.a+'×'+r.b+'='+r.ans+' ('+(r.status==='timeout'?'وقت':r.status==='skip'?'تخطي':r.given)+')').join(' | ')
+    };
+    try{
+      if(navigator.onLine===false) throw new Error('offline');
+      const ctl=new AbortController();
+      const to=setTimeout(()=>ctl.abort(),12000);
+      await fetch(url,{
+        method:'POST',
+        mode:'no-cors',
+        headers:{'Content-Type':'text/plain;charset=utf-8'},
+        body:JSON.stringify(payload),
+        signal:ctl.signal
+      });
+      clearTimeout(to);
+      setSt('ok','✅ تم إرسال نتيجتك إلى المعلم.');
+    }catch(e){
+      setSt('fail',FAILMSG);
+      $('retryBtn').hidden=false;
+    }
+  }
+
+  $('retryBtn').onclick=()=>{SND.click();sendSheet()};
+  $('copyBtn').onclick=async()=>{
+    SND.click();
+    const txt=report();
+    try{
+      await navigator.clipboard.writeText(txt);
+      $('sent').textContent='تم نسخ النتيجة. الصقها في رسالة للمعلم.';
+    }catch(e){
+      const ta=document.createElement('textarea');
+      ta.value=txt;
+      ta.style.cssText='width:100%;height:150px;background:#0c1222;color:#f0f4ff;border:1px solid #2d3a5c;border-radius:10px;padding:8px;direction:rtl';
+      $('sent').textContent='انسخ النص التالي يدويًا:';
+      $('sent').after(ta);
+      ta.select();
+      setTimeout(()=>ta.remove(),30000);
+    }
+  };
+
+  $('againBtn').onclick=()=>{SND.click();countdown()};
+  $('homeBtn').onclick=()=>{SND.click();show('sStart');updateBestBox()};
+
+  /* ---------- confetti ---------- */
+  function confetti(){
+    const c=$('conf'),x=c.getContext('2d');
+    c.width=innerWidth;c.height=innerHeight;
+    if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+    const cols=['#14b8a6','#f59e0b','#10b981','#f43f5e','#38bdf8'];
+    const P=Array.from({length:110},()=>({
+      x:Math.random()*c.width, y:-20-Math.random()*c.height*.5,
+      w:6+Math.random()*6, h:8+Math.random()*8,
+      vy:2+Math.random()*3.5, vx:-1.5+Math.random()*3,
+      r:Math.random()*6, vr:-.2+Math.random()*.4,
+      c:cols[Math.floor(Math.random()*cols.length)]
+    }));
+    let f=0;
+    (function loop(){
+      x.clearRect(0,0,c.width,c.height);
+      P.forEach(p=>{
+        p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;
+        x.save();x.translate(p.x,p.y);x.rotate(p.r);
+        x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        x.restore();
+      });
+      if(++f<260) requestAnimationFrame(loop);
+      else x.clearRect(0,0,c.width,c.height);
+    })();
+  }
+})();
+</script>
+</body>
+</html>
